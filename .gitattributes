@@ -1,0 +1,7 @@
+# Always use LF for shell scripts (they run in WSL/Linux)
+*.sh    text eol=lf
+*.ps1   text eol=crlf
+*.py    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.yml   text eol=lf
