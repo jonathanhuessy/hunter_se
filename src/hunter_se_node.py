@@ -191,9 +191,12 @@ class HunterSENode(Node):
                 dx   = R * math.sin(dyaw)
                 dy   = R * (1.0 - math.cos(dyaw))
 
-            self._yaw += dyaw
+            # Rotate the arc chord by the ORIGINAL yaw, then update yaw.
+            # Updating yaw first would rotate the displacement by the new heading,
+            # corrupting the odometry on every arc step.
             self._x   += dx * math.cos(self._yaw) - dy * math.sin(self._yaw)
             self._y   += dx * math.sin(self._yaw) + dy * math.cos(self._yaw)
+            self._yaw += dyaw
 
             x, y, yaw = self._x, self._y, self._yaw
 

@@ -60,7 +60,7 @@ def run_figure8(
     sim_speed: float = 1.0,
 ) -> None:
     if arc_time is None:
-        arc_time = arc_duration(math.pi, steering, speed)
+        arc_time = arc_duration(2 * math.pi, steering, speed)
 
     R         = turning_radius(steering)
     sweep_deg = math.degrees(speed * arc_time / R)
