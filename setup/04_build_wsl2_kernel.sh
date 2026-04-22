@@ -10,6 +10,12 @@
 
 set -euo pipefail
 
+if [[ $EUID -ne 0 ]]; then
+    echo "ERROR: This script must be run with sudo." >&2
+    echo "  sudo bash setup/04_build_wsl2_kernel.sh" >&2
+    exit 1
+fi
+
 BUILD_DIR="$HOME/wsl2-kernel"
 
 echo "=== WSL2 Custom Kernel Build (gs_usb / candleLight CAN adapter) ==="

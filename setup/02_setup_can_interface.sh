@@ -16,6 +16,12 @@
 
 set -uo pipefail
 
+if [[ $EUID -ne 0 ]]; then
+    echo "ERROR: This script must be run with sudo." >&2
+    echo "  sudo bash setup/02_setup_can_interface.sh" >&2
+    exit 1
+fi
+
 BITRATE=500000
 IFACE=can0
 MAX_RETRIES=3
@@ -26,8 +32,14 @@ echo "=== Hunter SE CAN Interface Setup ==="
 echo "[1/4] Checking can-utils..."
 if ! command -v candump &>/dev/null; then
     echo "  Installing can-utils (requires internet, one-time only)..."
-    apt-get update -qq
-    apt-get install -y -qq can-utils
+    if ! apt-get update -qq; then
+        echo "ERROR: apt-get update failed — check network connectivity." >&2
+        exit 1
+    fi
+    if ! apt-get install -y -qq can-utils; then
+        echo "ERROR: can-utils install failed — check network connectivity." >&2
+        exit 1
+    fi
 else
     echo "  can-utils already installed, skipping."
 fi

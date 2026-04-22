@@ -10,6 +10,12 @@
 
 set -uo pipefail
 
+if [[ $EUID -ne 0 ]]; then
+    echo "ERROR: This script must be run with sudo." >&2
+    echo "  sudo bash setup/05_reset_can.sh" >&2
+    exit 1
+fi
+
 IFACE=can0
 BITRATE=500000
 MAX_RETRIES=5
@@ -20,6 +26,16 @@ for arg in "$@"; do
 done
 
 echo "=== Hunter SE CAN Reset ==="
+
+# Pre-check: is the interface present at all?
+if ! ip link show "$IFACE" &>/dev/null; then
+    echo ""
+    echo "ERROR: $IFACE does not exist — USB-CAN adapter is not attached."
+    echo "ACTION REQUIRED — in Windows PowerShell (Admin):"
+    echo "  .\\setup\\01_attach_usb_can.ps1"
+    echo "Then re-run: sudo bash setup/05_reset_can.sh"
+    exit 1
+fi
 
 # Step 1: Force interface down (ignore all errors — it may be unresponsive)
 echo "[1/3] Forcing $IFACE down..."
@@ -70,8 +86,8 @@ echo "=== $IFACE reset complete ==="
 
 if $VERIFY; then
     echo ""
-    echo "Listening for CAN frames for 5 seconds (robot must be powered on)..."
-    timeout 5 candump "$IFACE" -e || true
+    echo "Listening for CAN frames for 3 seconds (robot must be powered on)..."
+    timeout 3 candump "$IFACE" -e || true
     RX=$(ip -s link show "$IFACE" | awk '/RX:/{getline; print $2}')
     if [[ "$RX" -gt 0 ]]; then
         echo "✓ RX frames received — CAN bus is live."

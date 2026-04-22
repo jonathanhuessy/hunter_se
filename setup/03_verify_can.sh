@@ -6,7 +6,7 @@
 set -euo pipefail
 
 IFACE=can0
-TIMEOUT=5
+TIMEOUT=2
 
 echo "=== Hunter SE CAN Verification ==="
 echo "Listening on $IFACE for ${TIMEOUT}s (power on the robot first)..."
